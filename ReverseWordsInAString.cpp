@@ -1,40 +1,33 @@
 #include <string>
-#include <stack>
 #include <iostream>
+
 using namespace std;
 
 class Solution {
 public:
 	void reverseWords(string &s) {
-		stack<string> strStack;
-
-		size_t pos1 = 0;
-		size_t pos2 = 0;
-		while (1)
+		const char* buf = s.c_str();
+		string tmp;
+		for (std::size_t sPos = 0; sPos < s.length(); ++sPos)
 		{
-			pos1 = s.find_first_not_of(' ', pos2);
-			if (pos1 == string::npos) break;
-			pos2 = s.find_first_of(' ', pos1);
+			if (buf[sPos] == ' ') continue;
+			std::size_t ePos = sPos + 1;
+			while (ePos < s.length() && buf[ePos] != ' ')
+				++ePos;
 
-			strStack.push(s.substr(pos1, pos2 == string::npos ? s.length() - pos1 : pos2 - pos1));
+			tmp = tmp.empty() 
+				? string(&buf[sPos], ePos - sPos)
+				: string(&buf[sPos], ePos - sPos) + ' ' + tmp;
+			sPos = ePos;
 		}
-
-		s.clear();
-		if (strStack.empty()) return;
-		while (!strStack.empty())
-		{
-			s += strStack.top() + ' ';
-			strStack.pop();
-		}
-
-		s.erase(s.length() - 1);
+		s.swap(tmp);
 	}
 };
 
 int main()
 {
-	std::string str = " the sky is blue ";
 	Solution s;
+	string str = "   the sky is   blue   ";
 	s.reverseWords(str);
 	std::cout << str << std::endl;
 	return 0;
