@@ -9,16 +9,16 @@ struct ListNode {
 class Solution {
 public:
 	bool hasCycle(ListNode *head) {
-		const ListNode* p1 = head;
-		const ListNode* p2 = head;
-		while (p1 && p2)
+		const ListNode* pFast = head;
+		const ListNode* pSlow = head;
+		while (pFast && pSlow)
 		{
-			p1 = p1->next;
-			p2 = p2->next;
-			if (!p2) break;
-			p2 = p2->next;
+			pSlow = pSlow->next;
+			pFast = pFast->next;
+			if (!pFast) break;
+			pFast = pFast->next;
 
-			if (p1 == p2)
+			if (pFast && pSlow && pFast == pSlow)
 				return true;
 		}
 
