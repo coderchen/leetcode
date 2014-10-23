@@ -43,14 +43,14 @@ public:
 		std::deque<TreeNode*> rQueue;
 
 		lQueue.push_back(root->left);
-		rQueue.push_front(root->right);
+		rQueue.push_back(root->right);
 
 		while (!lQueue.empty() && !rQueue.empty())
 		{
 			TreeNode* lNode = lQueue.front();
 			lQueue.pop_front();
-			TreeNode* rNode = rQueue.back();
-			rQueue.pop_back();
+			TreeNode* rNode = rQueue.front();
+			rQueue.pop_front();
 			if (!lNode && !rNode) continue;
 			if (lNode && rNode)
 			{
@@ -58,8 +58,8 @@ public:
 					return false;
 				lQueue.push_back(lNode->left);
 				lQueue.push_back(lNode->right);
-				rQueue.push_front(rNode->right);
-				rQueue.push_front(rNode->left);
+				rQueue.push_back(rNode->right);
+				rQueue.push_back(rNode->left);
 			}
 			else
 				return false;
