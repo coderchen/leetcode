@@ -47,28 +47,22 @@ public:
 
 		while (!lQueue.empty() && !rQueue.empty())
 		{
-			if (lQueue.size() != rQueue.size()) 
-				return false;
-			std::size_t cnt = lQueue.size();
-			for (std::size_t i = 0; i < cnt; ++i)
+			TreeNode* lNode = lQueue.front();
+			lQueue.pop_front();
+			TreeNode* rNode = rQueue.back();
+			rQueue.pop_back();
+			if (!lNode && !rNode) continue;
+			if (lNode && rNode)
 			{
-				TreeNode* lNode = lQueue.front();
-				lQueue.pop_front();
-				TreeNode* rNode = rQueue.back();
-				rQueue.pop_back();
-				if (!lNode && !rNode) continue;
-				if (lNode && rNode)
-				{
-					if (lNode->val != rNode->val)
-						return false;
-					lQueue.push_back(lNode->left);
-					lQueue.push_back(lNode->right);
-					rQueue.push_front(rNode->right);
-					rQueue.push_front(rNode->left);
-				}
-				else
+				if (lNode->val != rNode->val)
 					return false;
+				lQueue.push_back(lNode->left);
+				lQueue.push_back(lNode->right);
+				rQueue.push_front(rNode->right);
+				rQueue.push_front(rNode->left);
 			}
+			else
+				return false;
 		}
 
 		return true;
