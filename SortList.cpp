@@ -2,7 +2,6 @@
 #include <algorithm>
 #include <cstdarg>
 #include <list>
-#include <vector>
 
 struct ListNode {
     int val;
@@ -13,9 +12,12 @@ struct ListNode {
 class Solution {
 public:
 	ListNode *sortList(ListNode *head) {
-		if (head == nullptr) return nullptr;
+		if (!head || !head->next) return head;
 
-		std::vector<ListNode*> listVec;
+		const std::size_t _MaxBin = 32;
+		ListNode* _BinList[_MaxBin];
+		memset(_BinList, 0, sizeof(_BinList));
+		std::size_t _CurBin = 0;
 
 		while (head)
 		{
@@ -24,22 +26,27 @@ public:
 			node->next = nullptr;
 		
 			std::size_t i = 0;
-			while (i < listVec.size() && listVec[i])
+			while (i < _CurBin && _BinList[i])
 			{
-				node = _merge(listVec[i], node);
-				listVec[i++] = nullptr;
+				node = _merge(node, _BinList[i]);
+				_BinList[i++] = nullptr;
 			}
-			if (i == listVec.size()) listVec.push_back(node);
-			else listVec[i] = node;
+			if (i == _MaxBin)
+				_BinList[_MaxBin - 1] = _merge(_BinList[_MaxBin - 1], node);
+			else
+			{
+				_BinList[i] = node;
+				if (i == _CurBin) ++_CurBin;
+			}
 		}
 
-		for (std::size_t i = 1; i < listVec.size(); ++i)
+		for (std::size_t i = 1; i < _CurBin; ++i)
 		{
-			listVec[i] = _merge(listVec[i - 1], listVec[i]);
-			listVec[i - 1] = nullptr;
+			_BinList[i] = _merge(_BinList[i], _BinList[i - 1]);
+			_BinList[i - 1] = nullptr;
 		}
-
-		return *(listVec.rbegin());
+		
+		return _BinList[_CurBin - 1];
 	}
 
 private:
