@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cstdarg>
 #include <list>
+#include <vector>
 
 struct ListNode {
     int val;
@@ -14,40 +15,31 @@ public:
 	ListNode *sortList(ListNode *head) {
 		if (head == nullptr) return nullptr;
 
-		ListNode* listTmp = nullptr;
-		ListNode* listCounter[64];
-		for (int i = 0; i < 64; ++i)
-			listCounter[i] = nullptr;
+		std::vector<ListNode*> listVec;
 
-		int fill = 0;
 		while (head)
 		{
-			listTmp = head;
+			ListNode* node = head;
 			head = head->next;
-			listTmp->next = nullptr;
-
-			int i = 0;
-			while (i < fill && listCounter[i] != nullptr)
+			node->next = nullptr;
+		
+			std::size_t i = 0;
+			while (i < listVec.size() && listVec[i])
 			{
-				listTmp = _merge(listTmp, listCounter[i]);
-				listCounter[i++] = nullptr;
+				node = _merge(listVec[i], node);
+				listVec[i++] = nullptr;
 			}
-
-			listCounter[i] = listTmp;
-			if (i == fill)
-				++fill;
+			if (i == listVec.size()) listVec.push_back(node);
+			else listVec[i] = node;
 		}
 
-		for (int i = 1; i < fill; ++i)
+		for (std::size_t i = 1; i < listVec.size(); ++i)
 		{
-			if (listCounter[i - 1] != nullptr || listCounter[i] != nullptr)
-			{
-				listCounter[i] = _merge(listCounter[i - 1], listCounter[i]);
-				listCounter[i - 1] = nullptr;
-			}
+			listVec[i] = _merge(listVec[i - 1], listVec[i]);
+			listVec[i - 1] = nullptr;
 		}
 
-		return listCounter[fill - 1];
+		return *(listVec.rbegin());
 	}
 
 private:
@@ -56,21 +48,25 @@ private:
 		ListNode* p = nullptr;
 		ListNode** pp = &p;
 
-		while (l1 || l2)
+		while (l1 && l2)
 		{
-			ListNode** pList = nullptr;
-			if (l1 && l2)
-				pList = l1->val <= l2->val ? &l1 : &l2;
+			if (l1->val < l2->val)
+			{
+				*pp = l1;
+				pp = &l1->next;
+				l1 = l1->next;
+				*pp = nullptr;
+			}
 			else
-				pList = l1 ? &l1 : &l2;
-
-			ListNode* tmpNode = *pList;
-			*pList = (*pList)->next;
-			tmpNode->next = nullptr;
-			*pp = tmpNode;
-			pp = &tmpNode->next;
+			{
+				*pp = l2;
+				pp = &l2->next;
+				l2 = l2->next;
+				*pp = nullptr;
+			}
 		}
 
+		*pp = l1 ? l1 : l2;
 		return p;
 	}
 };
@@ -107,7 +103,7 @@ void print_and_destroy(ListNode* head)
 int main()
 {
 	Solution s;
-	ListNode* head = create_list(3, 3, 2, 4);
+	ListNode* head = create_list(4, 4, 2, 1, 3);
 	head = s.sortList(head);
 	print_and_destroy(head);
 
