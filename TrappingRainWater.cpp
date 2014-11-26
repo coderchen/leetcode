@@ -3,30 +3,30 @@ public:
     int trap(int A[], int n) {
         int V = 0;
 		for (int i = 0; i < n;) {
-			while (i+1 < n && A[i+1] >=A[i])
+			while (i+1 < n && A[i+1] >= A[i])
 				++i;
 			
 			int j = i + 1;
-			if (j >= n) break;
-			while (j+1 < n && A[j+1] <= A[j])
+			if (j == n) break;
+			int k = i + 1;
+			while (j+1 < n) {
 				++j;
-			
-			int k = j + 1;
-			while (k+1 < n && A[k+1] >= A[k])
-				++k;
-			if (k >= n) break;
-			
-			//[i, k]
-			int top = std::min(A[i], A[k]);
-			int tempV = (k-i-1) * std::min(A[i], A[k]);
-			for (int p = i + 1; p < k; ++p) {
-				tempV -= std::min(A[p], top);
+				if (A[j] >= A[k]) {
+					k = j;
+					if (A[k] > A[i]) 
+						break;
+				}
 			}
 			
-			V += tempV;
+			int top = std::min(A[i], A[k]);
+			int tmpV = (k-i-1) * top;
+			for (int t = i+1; t < k; ++t) {
+				tmpV -= std::min(A[t], top);
+			}
+			
+			V += tmpV;
 			i = k;
 		}
-		
 		return V;
     }
 };
